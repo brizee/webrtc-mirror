@@ -1,0 +1,34 @@
+body{
+background: #000;
+color: #FFF;
+font-family: "Trebuchet MS", Helvetica, sans-serif;
+font-size: 12px;
+}
+div#logo{
+text-align: center;
+}
+h1{
+text-align: center;
+}
+h2{
+color: #D66216;
+font-family: Walkway, "Trebuchet MS", Helvetica, sans-serif;	
+}
+a{
+color: #D66216;
+text-decoration: none;	
+}
+a:hover{
+text-decoration: underline;
+}
+@font-face {
+ font-family: Walkway;
+ src: url(/Walkway_rounded.eot) /* EOT file for IE */
+}
+@font-face {
+ font-family: Walkway;
+ src: url('/Walkway Bold.ttf') /* TTF file for CSS3 browsers */
+}
+p{
+font-size: 1.1em;
+}

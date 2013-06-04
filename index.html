@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+	<title>WebRTC Project - BrianBea.com</title>
+	<!-- Site Wide Style Information -->
+	<link href="styles.css" type="text/css" rel="stylesheet"/>
+	<link rel="icon" type="image/png" href="res/favicon.png">
+	
+	<!-- Page Specific Style Information -->
+	<style type="text/css">
+body{
+text-align: center;
+}
+#logo{
+float: left;
+
+position: absolute;
+top: 10px;
+left: 10px;
+}
+
+#logo img{
+width: 150px;
+}
+#snapshot{
+white-space: nowrap;
+overflow-x: scroll;
+}
+
+#snapshot img{
+width: 200px;
+}
+</style>
+	
+	<!-- Game Scripts +jQuery -->
+	<script src="http://brianbea.com/jquery-1.7.1.js" type="text/javascript"></script>
+	<script type="text/javascript" src="button.js"></script>
+	<script type="text/javascript" src="motion.js"></script>	
+	<script type="text/javascript" src="game.js"></script>
+	<script type="text/javascript">
+// Specify what we need from our video/audio feed, in this case all we need is video and it should be no bigger than 800x600
+// The browser will scale the video down if need be.
+var constraints = {
+    video: {
+      mandatory: {
+         maxWidth: 800,
+         maxHeight: 600
+      }
+    }
+  };
+
+var e;
+var canvas;
+var wcanvas;
+var context;
+var wcontext;
+var Game;
+
+/* Callback Functions for getUserMedia */
+function successCallback(mediastream){
+	var video = document.getElementById('video');
+	video.src = window.URL.createObjectURL(mediastream);
+	video.play();	// Place video feed into a video tag
+		
+	Motion.context = wcontext;		// Set up the motion capture class
+	Motion.setVideo(video);
+}
+
+function failCallback(error){
+	e = error;
+console.error("navigator.getUserMedia error: " + error);
+}
+
+// Main Entry Point for the Application 
+window.onload = function(){
+	Game = new _Game();
+	
+	// Fetch some elements from the DOM
+	 video = document.getElementById('video');
+	 canvas = document.getElementById('canvas');
+	 wcanvas = document.getElementById('workcanvas');
+	 context = canvas.getContext('2d');
+	 wcontext = wcanvas.getContext('2d');
+	 document.getElementById('fcanvas').getContext('2d').translate(800,0);
+	document.getElementById('fcanvas').getContext('2d').scale(-1,1);
+	 // Request webcam access asynchronously
+	 if(navigator.webkitGetUserMedia){
+	navigator.webkitGetUserMedia(constraints, successCallback, failCallback);
+	
+	// Main Game Loop
+	setInterval(function(){
+	//wcontext.clearRect(0,0,800,600);
+	if(Motion.ready){ // Checks whether the motion capture module is ready (i.e. has acquired a camera feed)
+		Game.update();
+		context.clearRect(0,0,800,600);
+		Game.render(context);
+	}
+	else{	// If it hasn't just render a message asking the player to allow webcam access.
+		context.fillStyle = "#000";
+		context.fillRect(0,0,800,600);
+		context.font = "bold 28px Walkway, sans-serif";
+		context.fillStyle= "#FFF";
+		context.textAlign = "center";
+		context.textBaseline = "middle";
+		context.fillText("Please allow Camera access to begin...", 400, 500);
+	}
+
+	},30);
+	}
+	else{	// Render an error if the players browser does not support webcam access
+		context.fillStyle = "#000";
+		context.fillRect(0,0,800,600);
+		context.font = "bold 28px Walkway, sans-serif";
+		context.fillStyle= "#FFF";
+		context.textAlign = "center";
+		context.textBaseline = "middle";
+		context.fillText("Sorry your browser is not supported yet.", 400, 300);
+		context.fillText("Try Chrome Canary, Firefox Nightly coming soon!", 400, 500);
+	}
+	}
+	</script>
+		<!-- Google Analytics Tracking -->
+		<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','http//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-40119184-1', 'brianbea.com');
+  ga('send', 'pageview');
+
+</script>
+	</head>
+	<body>
+	<canvas id="workcanvas" width="800" height="600" style="display: none;"></canvas>
+	<div id="flipLayer" style="position: relative; height: 600px; overflow: hidden;width:800px; margin: 0px auto;">
+	<video id="video" width="800" height="600" style="-webkit-transform: scale(-1,1); position: absolute; top:0px;left: 0px;"></video>
+	<canvas id="fcanvas" width="800" height="600" style="position: absolute; top: 0px;left: 0px;"></canvas>
+	<canvas id="canvas" width="800" height="600" style="position: absolute; top: 0px;left: 0px;"></canvas>
+	</div>
+	<br/><input type="button" value="Show Movement" onclick="Motion.renderMovement = !Motion.renderMovement;" /><br/>
+	<div id="snapshot"></div>
+	<!-- Load in assets for rendering in canvas and hide them from the player -->
+	<img src="res/roughmonkey.png" style="display: none;" id="shivamonkey"/>
+	<img src="res/chamberlaineak.png" style="display: none;" id="chamberlain"/>
+	<img src="res/bg.png" style="display: none;" id="bg"/>
+	<img src="res/cloud.png" style="display: none;" id="clouds"/>
+	<img src="res/outline.png" style="display: none;" id="outline"/>
+	<img src="res/heart.png" style="display: none;" id="heart"/>
+	<div id="logo"><a href="http://brianbea.com"><img id="logo" src="http://brianbea.com/Logo.png"/></a></div>
+	
+	</body>
+	</html>
